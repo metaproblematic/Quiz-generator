@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Poll Parser</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.5.0/Chart.min.js"></script>
+</head>
+<body>
+
+<style>
+div {
+  margin-bottom: 10px;
+  margin-top: 55px;
+  text-align: center;
+}
+button {
+    margin-left: 400px;
+    background-color:lightgray;
+}
+</style>
+
+     <div>  
+        <label for="file">Choose CSV file to upload</label>
+        <input type="file" id="fileInput" accept=".csv" name="file">
+        <br>
+        <br>
+        <label for="tablename">New SQL table name:</label> 
+        <input type="text" id="tablename" name="tablename">
+    </div>  
+    <br>
+    <button onclick="submitCSV('fileInput','tablename')">Submit</button>  
+    
+    <canvas id="quizChart" width="1600" height="900"></canvas>
+  
+  
+  <script>
+    
+    function submitCSV(id,id2) {
+        var tablename = document.getElementById(id2);
+        tablename = tablename.value;
+        console.log(tablename);
+        var fileInput = document.getElementById(id);
+        var reader = new FileReader();
+        reader.onloadend = function() {
+            var text = reader.result; 
+            console.log(text);
+            ajaxCall(text, tablename);
+        }
+        
+        reader.readAsText(fileInput.files[0]);
+    }
+
+    function ajaxCall(text, tablename){
+
+        var endpoint = "https://toolbox.injoyonline.com/poll-parser/polls.php";  
+        var formData = new FormData;
+        formData.append("text", text);
+        formData.append("tablename", tablename);
+
+
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+            }
+        }
+        request.open("POST", endpoint, true);
+        request.send(formData);
+    }
+         
+  </script>  
+</body>
+</html>
